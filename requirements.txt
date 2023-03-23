@@ -1,0 +1,8 @@
+django
+pillow
+cryptography
+django-ckeditor
+pymysql
+pyodbc
+mysqlclient
+# sd
