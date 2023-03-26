@@ -8,7 +8,7 @@
 
 
 
-<div class="col-md-12">    
+<div class="col-lg">    
     <div id='calendar' class="card bg-dark text-success" style="padding: 20px"></div> 
 </div> 
 
@@ -105,9 +105,26 @@
         
         var calendar = $('#calendar').fullCalendar({
             header: {
-                left: 'prev,next today',
+                left: 'prev,next,Miboton',
                 center: 'title',
-                right: 'month,agendaWeek,agendaDay'
+                right: 'month,agendaWeek,basicDay',
+            },
+            customButtons:{
+                Miboton:{
+                    text:"+",
+                    click:function()
+                        {
+                            
+                        $("#horaFin").val(moment().add(1, 'hours').format('HH:mm'));
+                        $("#horaActual").val(moment().format("HH:mm"));
+                        $("#fechaInicio").val(moment().format("YYYY-MM-DD"));
+                        $("#fechaFin").val(moment().format("YYYY-MM-DD"));
+
+                        $("#exampleModal1").modal('show');
+
+                        }
+                    
+                }
             },
            
             events: '/all_events',
