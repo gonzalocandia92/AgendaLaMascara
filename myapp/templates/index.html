@@ -3,7 +3,198 @@
 {% block title %}Python Django Ajax FullCalender CRUD (Create, Read, Update and Delete){% endblock title %}
    
 {% block content %}
+
+
+
+
+
 <div class="col-md-12">    
     <div id='calendar' class="card bg-dark text-success" style="padding: 20px"></div> 
 </div> 
+
+<!-- Enlace para abrir el modal -->
+{% comment %} <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#miModal">Abrir Modal</button> {% endcomment %}
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-light">
+        <div class="modal-header">
+          <h4 class="modal-title" id="exampleModalLabel">Nuevo evento</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body ">
+         
+            <!-- Modal body -->
+       
+            
+            <div class="modal-content border-white">
+            
+
+            <form method="post" action="{% url 'crear_event' %}">
+                {% csrf_token %}
+            <table class="form form-table ">
+
+                <div class="mb-3 ">
+                  <label for="" class="form-label">Nombre del evento</label>
+                  <input type="text"
+                    class="form-control" name="name" id="" aria-describedby="helpId" placeholder="">
+                </div>
+
+                <div class="mb-3">
+                    <label for="" class="form-label">Descripción</label>
+                    <textarea
+                      class="form-control" name="description" id="" aria-describedby="helpId" rows="3" placeholder=""></textarea>
+                </div>
+
+
+                <div class="mb-3">
+                    <label for="" class="form-label">Fecha de inicio</label>
+                    <input type="date"
+                      class="form-control" name="start-date" id="fechaInicio" aria-describedby="helpId" placeholder="">
+                </div>
+                <div class="mb-3">
+                    <label for="" class="form-label">Hora de inicio</label>
+                    <input type="time"
+                      class="form-control" name="start-time" id="horaActual" aria-describedby="helpId"  placeholder="">
+                </div>
+                <div class="mb-3">
+                    <label for="" class="form-label">Fecha de Fin</label>
+                    <input type="date"
+                      class="form-control" name="end-date" id="fechaFin" aria-describedby="helpId" placeholder="">
+                </div>
+                <div class="mb-3">
+                    <label for="" class="form-label">Hora de Fin</label>
+                    <input type="time"
+                      class="form-control" name="end-time" id="horaFin" aria-describedby="helpId" placeholder="">
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <input class="btn btn-outline-success" type="submit" value="Guardar">
+                </div>
+            </table>
+            
+            </form>
+        
+            <!-- Modal body -->
+
+
+
+        </div>
+        <div class="modal-footer">
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Fin Modal -->
+
+
+
+<!-- Optional: Place to the bottom of scripts -->
+<script>
+    const myModal = new bootstrap.Modal(document.getElementById('modalId'), options)
+
+</script>
+
+  <script>
+
+        
+    $(document).ready(function () {
+        
+        
+        var calendar = $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+           
+            events: '/all_events',
+            selectable: true,
+            selectHelper: true,
+            editable: true,
+            eventLimit: true,
+            dayClick: function(date, jsEvent, view) {
+                var horaActual = moment().format("HH:mm");
+                var horaFin = moment().add(1, 'hours').format('HH:mm');
+                
+                $("#horaFin").val(horaFin);
+                $("#horaActual").val(horaActual);
+                $("#fechaInicio").val(date.format());
+                $("#fechaFin").val(date.format());
+
+                $("#exampleModal1").modal('show');
+ 
+            },
+            eventResize: function (event) {
+                var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
+                var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
+                var title = event.title;
+                var id = event.id;
+                var description = event.description;
+                $.ajax({
+                    type: "GET",
+                    url: '/update',
+                    data: {'title': title, 'start': start, 'end': end, 'description':description, 'id': id},
+                    dataType: "json",
+                    success: function (data) {
+                        calendar.fullCalendar('refetchEvents');
+                        alert('Event Update');
+                    },
+                    error: function (data) {
+                        alert('There is a problem!!!');
+                    }
+                });
+            },
+  
+            eventDrop: function (event) {
+                var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
+                var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
+                var title = event.title;
+                var id = event.id;
+                var description = event.description;
+                $.ajax({
+                    type: "GET",
+                    url: '/update',
+                    data: {'title': title, 'start': start, 'end': end, 'description': description, 'id': id},
+                    dataType: "json",
+                    success: function (data) {
+                        calendar.fullCalendar('refetchEvents');
+                        alert('Event Update');
+                    },
+                    error: function (data) {
+                        alert('There is a problem!!!');
+                    }
+                });
+            },
+  
+            eventClick: function (event) {
+                if (confirm("Are you sure you want to remove it?")) {
+                    var id = event.id;
+                    $.ajax({
+                        type: "GET",
+                        url: '/remove',
+                        data: {'id': id},
+                        dataType: "json",
+                        success: function (data) {
+                            calendar.fullCalendar('refetchEvents');
+                            alert('Event Removed');
+                        },
+                        error: function (data) {
+                            alert('There is a problem!!!');
+                        }
+                    });
+                }
+            },
+  
+        });
+    });
+
+           
+        
+          
+    </script>
+
+
 {% endblock content %} 
