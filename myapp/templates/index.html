@@ -1,6 +1,6 @@
 {% extends "base.html" %}
    
-{% block title %}Python Django Ajax FullCalender CRUD (Create, Read, Update and Delete){% endblock title %}
+{% block title %}Agenda - La Máscara Teatro{% endblock title %}
    
 {% block content %}
 
@@ -25,7 +25,7 @@
             </div>
             <div class="modal-body ">            
                 <div class="modal-content border-white">
-                <form method="post" id="formu" action="{% url 'crear_event' %}">
+                <form method="post" id="formu" action="">
                     {% csrf_token %}
                 <table class="form form-table ">
                     <div class="mb-3 ">
@@ -104,7 +104,12 @@
                     text:"+",
                     click:function()
                         {
-                            
+                        var etiqueta1 = "Nuevo Evento";
+                        var form = document.getElementById("formu");
+                        form.action = "crear_event";
+                        $("#tituloEvento").html(etiqueta1);
+                        $("#nombre").val("");                   
+                        $("#descripcion").val("");    
                         $("#horaFin").val(moment().add(1, 'hours').format('HH:mm'));
                         $("#horaActual").val(moment().format("HH:mm"));
                         $("#fechaInicio").val(moment().format("YYYY-MM-DD"));
@@ -126,6 +131,8 @@
                 var horaActual = moment().format("HH:mm");
                 var horaFin = moment().add(1, 'hours').format('HH:mm');
                 var etiqueta1 = "Nuevo Evento";
+                var form = document.getElementById("formu");
+                form.action = "crear_event";
 
                 $("#nombre").val("");                   
                 $("#descripcion").val("");
