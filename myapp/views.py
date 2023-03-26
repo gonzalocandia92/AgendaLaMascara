@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from myapp.models import Events 
 from myapp.forms import EventForm
 from datetime import datetime
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 def index(request):  
@@ -50,6 +51,29 @@ def crear_event(request):
     else:
         return render(request, "event.html")
 
+def actualizar_event(request, id):
+    if request.method == "POST" or None:
+        name = request.POST["name"]
+        startTime = request.POST["start-time"]
+        startDate = request.POST["start-date"]
+        endTime = request.POST["end-time"]
+        endDate = request.POST["end-date"]
+        startStr = startDate + ' ' + startTime + ':00'
+        start = datetime.strptime(startStr, '%Y-%m-%d %H:%M:%S')
+        endStr = endDate + ' ' + endTime + ':00'
+        end = datetime.strptime(endStr, '%Y-%m-%d %H:%M:%S')
+        description = request.POST["description"]
+        event = get_object_or_404(Events, id=id)
+        event.start = start
+        event.end = end
+        event.name = name
+        event.description = description
+        event.save()
+        return redirect('index')
+    else:
+        return render(request, "event.html")
+    
+
 def add_event(request):
     form = EventForm(request.POST or None)
     if request.POST and form.is_valid():
@@ -82,9 +106,7 @@ def update(request):
     data = {}
     return JsonResponse(data)
  
-def remove(request):
-    id = request.GET.get("id", None)
+def remove(request, id):
     event = Events.objects.get(id=id)
     event.delete()
-    data = {}
-    return JsonResponse(data)
+    return redirect('index')
