@@ -4,17 +4,29 @@ from myapp.models import Events
 from myapp.forms import EventForm
 from datetime import datetime
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 
 # Create your views here.
+
+@login_required
 def index(request):  
-    all_events = Events.objects.all()
-    context = {
-        "events":all_events,
-        "form": EventForm
-    }
+    group = Group.objects.get(user=request.user)
     
-    return render(request,'index.html',context)
- 
+    if group.name == 'direccion':
+        all_events = Events.objects.all()
+        context = {
+            "events":all_events,
+            "form": EventForm
+        }
+        return render(request,'index.html',context)
+    elif group.name == 'visitante':
+        all_events = Events.objects.all()
+        context = {
+            "events":all_events,
+            }
+        return render(request,'read_only.html',context)
+    
 def all_events(request):                                                                                                 
     all_events = Events.objects.all()                                                                                    
     out = []                                                                                                             
@@ -107,6 +119,6 @@ def update(request):
     return JsonResponse(data)
  
 def remove(request, id):
-    event = Events.objects.get(id=id)
+    event = get_object_or_404(Events, id=id)
     event.delete()
     return redirect('index')

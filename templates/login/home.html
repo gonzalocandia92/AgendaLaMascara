@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+{% if request.user.is_authenticated %}
+
+
+
+<div class="mx-auto row justify-content-center align-items-center">
+  <div class="col-md-4">
+    <div class="card bg-cyan">
+        <img src="{{ user.profile.image.url }}" class="card-img-top" alt="..." style="width:180px; ">
+      <div class="card-body">
+        <h5 class="card-title text-dark"> {{ user.first_name }} {{ user.last_name }}</h5>
+        <p class="card-title">@{{ user.username }}</p>
+        <small><i class="bi bi-pin-map"></i> {{ user.profile.location }}</small>
+        <p class="card-text mt-2">{{ user.profile.bio }}</p>
+        <strong>Intereses: <br>
+        {% for interest in user.profile.interests.all %}
+          <span class="badge bg-secondary">{{interest.name | upper}}</span>
+        {% endfor %}
+        </strong>
+        <hr>
+        <a href="{% url 'logout' %}" class="btn btn-sm btn-success">Cerrar sesión</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <h4> Título cualquiera </h4>
+    <p> {% lorem %}</p>
+  </div>
+</div>
+
+{% else %}
+<div class="col-md-9 mx-auto">
+    <h4> Título cualquiera </h4>
+    <p> {% lorem %}</p>
+</div>
+
+{% endif %}
+
+
+{% endblock %}
+
+

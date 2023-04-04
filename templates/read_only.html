@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+   
+{% block title %}Agenda - La Máscara Teatro{% endblock title %}
+   
+{% block content %}
+
+
+<hr>
+
+
+<div class="container-fluid mx-auto" style="height: 100vh;">    
+    <div id='calendar' class="card bg-dark text-white" style="padding: 30px"></div> 
+</div> 
+
+
+
+<!-- Modal de creación de un evento -->
+
+<div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-light">
+        <div class="modal-header">
+          <h4 class="modal-title" id="tituloEvento"></h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body ">            
+                <div class="modal-content border-white">
+                <form method="post" id="formu" action="">
+                    {% csrf_token %}
+                <table class="form form-table ">
+                    <div class="mb-3 ">
+                    <label for="" class="form-label">Nombre del evento</label>
+                    <input type="text"
+                        class="form-control" name="name" id="nombre" aria-describedby="helpId" placeholder="" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="" class="form-label">Descripción</label>
+                        <textarea
+                        class="form-control" name="description" id="descripcion" aria-describedby="helpId" rows="3" placeholder=""></textarea>
+                    </div>
+                    <div class="row" >
+                        <div class="col-6">
+                            <label for="" class="form-label">Fecha de inicio</label>
+                            <input type="date"
+                            class="form-control" name="start-date" id="fechaInicio" aria-describedby="helpId" placeholder="">
+                        </div>
+                        <div class="col-6">
+                            <label for="" class="form-label">Hora de inicio</label>
+                            <input type="time"
+                            class="form-control" name="start-time" id="horaActual" aria-describedby="helpId"  placeholder="">
+                        </div>
+                    </div>
+                </br>
+                    <div class="row" >
+                        <div class="col-6">
+                            <label for="" class="form-label">Fecha de Fin</label>
+                            <input type="date"
+                            class="form-control" name="end-date" id="fechaFin" aria-describedby="helpId" placeholder="">
+                        </div>
+                        <div class="col-6">
+                            <label for="" class="form-label">Hora de Fin</label>
+                            <input type="time"
+                            class="form-control" name="end-time" id="horaFin" aria-describedby="helpId" placeholder="">
+                        </div>
+                    </div>
+
+                </br>
+                </table>  
+                    
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button type="button" id="cerrar-modal" class="btn btn-outline-success">Cerrar</button>
+                    </div>
+                
+                </form>
+                <!-- Modal body -->
+            </div>
+            <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Fin Modal -->
+
+
+
+
+  <script>
+    $(window).resize(function() {
+        $('.container-fluid').height($(window).height());
+      }).resize();
+        
+    $(document).ready(function () {
+        
+        var calendar = $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next',
+                center: 'title',
+                right: 'month,agendaWeek,basicDay',
+            },
+            
+            locale: 'es',
+            events: '/all_events',
+            selectable: true,
+            selectHelper: true,
+            editable: false,
+            eventLimit: true,
+            
+            eventClick: function (event,jsEvent,view) {
+                var start = event.start;
+                var end = event.end;
+                var title = event.title;
+                var id = event.id;
+                var description = event.description;
+                var etiqueta1 = "Ver Evento";
+   
+  
+                const botonCerrar = document.getElementById('cerrar-modal');
+                botonCerrar.addEventListener('click', () => {
+                    $("#exampleModal1").modal('hide');
+                });
+
+                $("#tituloEvento").html(etiqueta1);
+                $("#nombre").val(title);       
+                          
+                $("#descripcion").val(description);
+                $("#horaFin").val(end.format('HH:mm'));
+                $("#horaActual").val(start.format("HH:mm"));
+                $("#fechaInicio").val(start.format("YYYY-MM-DD"));
+                $("#fechaFin").val(end.format("YYYY-MM-DD"));
+
+                $("#exampleModal1").modal('show');
+
+
+            },
+    
+           
+        });
+    });
+
+           
+        
+          
+    </script>
+
+
+{% endblock content %} 
